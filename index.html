@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TCI Stability Monitor — PermaMind | Grades & Surplus Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;500;700;800&display=swap');
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: #0a0b0d;
+    color: #e8e6de;
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Modern glass‑like containers */
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #00d4aa, #0099ff);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 20px;
+    color: #000;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .logo-text h1 {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+
+  .logo-text p {
+    font-size: 10px;
+    color: #6b6a64;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.1em;
+  }
+
+  .badge-group {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .live-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #00d4aa;
+  }
+
+  .live-dot {
+    width: 8px;
+    height: 8px;
+    background: #00d4aa;
+    border-radius: 50%;
+    animation: pulse 1.4s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  .runtime {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: #111318;
+    padding: 6px 12px;
+    border-radius: 40px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  /* Metric Cards */
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin: 28px 0;
+  }
+
+  .metric-card {
+    background: #111318;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 20px;
+    padding: 18px;
+    transition: all 0.2s;
+  }
+
+  .metric-card.warning { border-left: 4px solid #f5a623; }
+  .metric-card.danger { border-left: 4px solid #e84a4a; }
+  .metric-card.healthy { border-left: 4px solid #00d4aa; }
+
+  .metric-label {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: #8b8a82;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .metric-value {
+    font-size: 32px;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1;
+  }
+
+  .metric-value.accent { color: #00d4aa; }
+  .metric-value.warning { color: #f5a623; }
+  .metric-value.danger { color: #e84a4a; }
+  .metric-sub {
+    font-size: 11px;
+    color: #6b6a64;
+    margin-top: 8px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Two column layout */
+  .row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+
+  .card {
+    background: #111318;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 24px;
+    padding: 20px;
+  }
+
+  .card-title {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.12em;
+    color: #8b8a82;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .chart-container {
+    height: 220px;
+    position: relative;
+  }
+
+  /* Agent Table */
+  .agent-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  .agent-table th {
+    text-align: left;
+    padding: 10px 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    color: #8b8a82;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .agent-table td {
+    padding: 12px 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .agent-row-click {
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+
+  .agent-row-click:hover {
+    background: rgba(0,212,170,0.05);
+  }
+
+  .agent-row-click.active {
+    background: rgba(0,212,170,0.12);
+    border-left: 3px solid #00d4aa;
+  }
+
+  .grade-A { color: #00d4aa; font-weight: 700; }
+  .grade-B { color: #8bc34a; }
+  .grade-C { color: #f5a623; }
+  .grade-D { color: #e84a4a; }
+  .grade-F { color: #b33b3b; }
+
+  .stage-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    background: rgba(255,255,255,0.05);
+  }
+
+  .stage-explore { background: rgba(0,212,170,0.2); color: #00d4aa; }
+  .stage-generate { background: rgba(0,153,255,0.2); color: #0099ff; }
+  .stage-learn { background: rgba(245,166,35,0.2); color: #f5a623; }
+  .stage-mimic { background: rgba(232,74,74,0.2); color: #e84a4a; }
+
+  .tci-bar-container {
+    width: 80px;
+    background: #1e1e2a;
+    border-radius: 20px;
+    height: 6px;
+    overflow: hidden;
+  }
+
+  .tci-bar-fill {
+    height: 100%;
+    border-radius: 20px;
+    width: 0%;
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 8px 16px;
+    border-radius: 40px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #e8e6de;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .btn-primary {
+    background: rgba(0,212,170,0.1);
+    border-color: #00d4aa;
+    color: #00d4aa;
+  }
+
+  .btn-danger {
+    border-color: #e84a4a;
+    color: #e84a4a;
+  }
+
+  .btn:hover {
+    background: rgba(255,255,255,0.05);
+    transform: translateY(-1px);
+  }
+
+  .ladder {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ladder-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    background: #0c0e12;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .ladder-marker {
+    width: 32px;
+    height: 32px;
+    border-radius: 40px;
+    background: #1a1e26;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+  }
+
+  .ladder-item.active .ladder-marker { background: #00d4aa; color: black; }
+  .ladder-item.passed .ladder-marker { background: rgba(0,212,170,0.3); color: #00d4aa; }
+
+  .alert-feed {
+    max-height: 200px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .alert {
+    background: #0c0e12;
+    border-left: 3px solid;
+    padding: 10px 12px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    border-radius: 10px;
+  }
+
+  .alert.info { border-color: #00d4aa; }
+  .alert.warn { border-color: #f5a623; }
+  .alert.danger { border-color: #e84a4a; }
+
+  .footer {
+    margin-top: 40px;
+    padding: 20px 0;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: #5f5e58;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  @media (max-width: 800px) {
+    .row-2 { grid-template-columns: 1fr; }
+    .metric-grid { grid-template-columns: repeat(2,1fr); }
+    .header { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo-area">
+      <div class="logo-icon">⧖</div>
+      <div class="logo-text">
+        <h1>PermaMind · TCI Monitor</h1>
+        <p>Thermodynamic Cognition Index · Surplus Stability</p>
+      </div>
+    </div>
+    <div class="badge-group">
+      <div class="live-badge"><div class="live-dot"></div> LIVE STREAM</div>
+      <div class="runtime" id="runtimeDisplay">RUNTIME 00:00:00</div>
+    </div>
+  </div>
+
+  <!-- Metrics row -->
+  <div class="metric-grid">
+    <div class="metric-card healthy" id="avgTciCard">
+      <div class="metric-label">FLEET AVG TCI</div>
+      <div class="metric-value accent" id="fleetAvg">0.74</div>
+      <div class="metric-sub">± surplus capacity</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">GRADE A / HEALTHY</div>
+      <div class="metric-value accent" id="healthyCount">4</div>
+      <div class="metric-sub">TCI ≥ 0.60</div>
+    </div>
+    <div class="metric-card warning">
+      <div class="metric-label">GRADE C / AT RISK</div>
+      <div class="metric-value warning" id="riskCount">1</div>
+      <div class="metric-sub">0.30 – 0.60</div>
+    </div>
+    <div class="metric-card danger">
+      <div class="metric-label">GRADE D/F / COLLAPSE</div>
+      <div class="metric-value danger" id="collapseCount">1</div>
+      <div class="metric-sub">TCI < 0.30</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">TOTAL EVENTS</div>
+      <div class="metric-value info" id="totalEvents">12.8k</div>
+      <div class="metric-sub">learning cycles</div>
+    </div>
+  </div>
+
+  <!-- Chart + Agent Table -->
+  <div class="row-2">
+    <div class="card">
+      <div class="card-title">TCI Trajectory <span id="chartAgentLabel">ALL AGENTS</span></div>
+      <div class="chart-container">
+        <canvas id="tciChart"></canvas>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="spawnAgent()">+ Spawn Agent</button>
+        <button class="btn" onclick="stressRandom()">⚡ Stress Test</button>
+        <button class="btn" onclick="resetFleet()">⟳ Reset Fleet</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">AGENT ROSTER · GRADES (A–F)</div>
+      <table class="agent-table" id="agentTable">
+        <thead>
+          <tr><th>Agent</th><th>TCI</th><th>Grade</th><th>Stage</th><th>Runtime</th></tr>
+        </thead>
+        <tbody id="agentTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Developmental ladder and alerts -->
+  <div class="row-2">
+    <div class="card">
+      <div class="card-title">DEVELOPMENTAL LADDER (TCI Grades)</div>
+      <div class="ladder" id="ladderContainer"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">LIVE ALERTS</div>
+      <div class="alert-feed" id="alertFeed"></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>PermaMind Research · TCI v2.0 · Nile Green, Breakthrough AI Protocols</span>
+    <span>@BAPxAI · bapxai.com</span>
+  </div>
+</div>
+
+<script>
+  // ---------- INITIAL AGENTS ----------
+  let agents = [
+    { id: 'NEXUS', ks: 0.92, fSurvival: 0.28, runtimeDays: 110, tci: 0.88, fTotal: 1.24 },
+    { id: 'AURA',  ks: 0.85, fSurvival: 0.30, runtimeDays: 87,  tci: 0.79, fTotal: 1.23 },
+    { id: 'NOVA',  ks: 0.78, fSurvival: 0.32, runtimeDays: 64,  tci: 0.63, fTotal: 1.13 },
+    { id: 'ECHO',  ks: 0.70, fSurvival: 0.35, runtimeDays: 41,  tci: 0.54, fTotal: 1.12 },
+    { id: 'DRIFT', ks: 0.55, fSurvival: 0.38, runtimeDays: 18,  tci: 0.38, fTotal: 1.07 },
+    { id: 'ZERO',  ks: 0.40, fSurvival: 0.42, runtimeDays: 3,   tci: 0.22, fTotal: 0.97 }
+  ];
+
+  let historyMap = {};
+  agents.forEach(a => {
+    historyMap[a.id] = Array.from({length: 30}, (_, i) => {
+      let base = a.tci;
+      return Math.min(0.99, Math.max(0.02, base - 0.12 + (i/30)*0.12 + (Math.random()-0.5)*0.07));
+    });
+  });
+
+  let alerts = [];
+  let totalEvents = 12847;
+  let runtimeSeconds = 0;
+  let selectedAgentId = null;
+  let tickInterval;
+
+  // Helper: compute TCI from ks, fTotal, fSurvival
+  function computeTci(agent) {
+    let raw = agent.ks * (agent.fTotal - agent.fSurvival);
+    return Math.min(0.99, Math.max(0.01, parseFloat(raw.toFixed(4))));
+  }
+
+  function getGrade(tci) {
+    if (tci >= 0.80) return { letter: 'A', color: 'grade-A' };
+    if (tci >= 0.60) return { letter: 'B', color: 'grade-B' };
+    if (tci >= 0.40) return { letter: 'C', color: 'grade-C' };
+    if (tci >= 0.20) return { letter: 'D', color: 'grade-D' };
+    return { letter: 'F', color: 'grade-F' };
+  }
+
+  function getStage(tci) {
+    if (tci > 0.70) return 'explore';
+    if (tci > 0.40) return 'generate';
+    if (tci > 0.15) return 'learn';
+    return 'mimic';
+  }
+
+  function stageLabel(stage) {
+    return { explore: 'EXPLORATION', generate: 'GENERATIVITY', learn: 'LEARNING', mimic: 'MIMICRY' }[stage];
+  }
+
+  function stageClass(stage) {
+    return `stage-${stage}`;
+  }
+
+  function addAlert(type, message) {
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute:'2-digit', second:'2-digit' });
+    alerts.unshift({ type, message, time });
+    if (alerts.length > 25) alerts.pop();
+    renderAlerts();
+  }
+
+  function renderAlerts() {
+    const container = document.getElementById('alertFeed');
+    if (!container) return;
+    if (alerts.length === 0) {
+      container.innerHTML = '<div class="alert info">No recent alerts — fleet stable</div>';
+      return;
+    }
+    container.innerHTML = alerts.map(alert => `
+      <div class="alert ${alert.type}">
+        <span style="color:#8b8a82; margin-right: 12px;">${alert.time}</span>
+        ${alert.message}
+      </div>
+    `).join('');
+  }
+
+  function renderAgentTable() {
+    const tbody = document.getElementById('agentTableBody');
+    tbody.innerHTML = agents.map(agent => {
+      const grade = getGrade(agent.tci);
+      const stage = getStage(agent.tci);
+      const isActive = selectedAgentId === agent.id;
+      return `
+        <tr class="agent-row-click ${isActive ? 'active' : ''}" onclick="selectAgent('${agent.id}')">
+          <td style="font-weight:600">${agent.id}</td>
+          <td>${agent.tci.toFixed(3)}</td>
+          <td class="${grade.color}"><strong>${grade.letter}</strong></td>
+          <td><span class="stage-badge ${stageClass(stage)}">${stageLabel(stage)}</span></td>
+          <td style="color:#8b8a82">${agent.runtimeDays}d</td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function updateMetricsAndLadder() {
+    const avg = agents.reduce((s,a) => s + a.tci, 0) / agents.length;
+    const healthy = agents.filter(a => a.tci >= 0.60).length;
+    const risk = agents.filter(a => a.tci >= 0.30 && a.tci < 0.60).length;
+    const collapse = agents.filter(a => a.tci < 0.30).length;
+    document.getElementById('fleetAvg').innerText = avg.toFixed(3);
+    document.getElementById('healthyCount').innerText = healthy;
+    document.getElementById('riskCount').innerText = risk;
+    document.getElementById('collapseCount').innerText = collapse;
+    document.getElementById('totalEvents').innerText = totalEvents.toLocaleString();
+
+    // Ladder update
+    const ladderDiv = document.getElementById('ladderContainer');
+    const steps = [
+      { name: 'Mimicry', min: 0, max: 0.15, desc: 'Reactive only' },
+      { name: 'Learning', min: 0.15, max: 0.40, desc: 'Pattern formation' },
+      { name: 'Generativity', min: 0.40, max: 0.70, desc: 'Novel output' },
+      { name: 'Exploration', min: 0.70, max: 1.0, desc: 'Self‑directed' }
+    ];
+    let activeStep = 0;
+    for (let i = steps.length-1; i >= 0; i--) {
+      if (avg >= steps[i].min) { activeStep = i; break; }
+    }
+    ladderDiv.innerHTML = steps.map((step, idx) => {
+      let status = '';
+      if (idx === activeStep) status = 'active';
+      else if (idx < activeStep) status = 'passed';
+      return `
+        <div class="ladder-item ${status}">
+          <div class="ladder-marker">${idx+1}</div>
+          <div><strong>${step.name}</strong><div style="font-size:10px; color:#8b8a82">${step.desc}</div></div>
+          <div style="margin-left:auto; font-family:monospace; font-size:10px">TCI ${step.min}–${step.max===1?'1.0':step.max}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderChart() {
+    const ctx = document.getElementById('tciChart').getContext('2d');
+    if (window.tciChartObj) window.tciChartObj.destroy();
+    const agentsToShow = selectedAgentId ? agents.filter(a => a.id === selectedAgentId) : agents;
+    const datasets = agentsToShow.map(agent => ({
+      label: agent.id,
+      data: historyMap[agent.id],
+      borderColor: agent.tci >= 0.6 ? '#00d4aa' : (agent.tci >= 0.3 ? '#f5a623' : '#e84a4a'),
+      borderWidth: selectedAgentId ? 2.5 : 1.8,
+      fill: false,
+      tension: 0.3,
+      pointRadius: 0
+    }));
+    window.tciChartObj = new Chart(ctx, {
+      type: 'line',
+      data: { labels: Array.from({length: 30}, (_,i) => i-29), datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: '#e8e6de', font: { size: 9 } } } },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b8a82' } },
+          y: { min: 0, max: 1, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8b8a82' } }
+        }
+      }
+    });
+    document.getElementById('chartAgentLabel').innerText = selectedAgentId || 'ALL AGENTS';
+  }
+
+  function selectAgent(id) {
+    selectedAgentId = selectedAgentId === id ? null : id;
+    renderAgentTable();
+    renderChart();
+  }
+
+  function updateAgentsAndSimulate() {
+    runtimeSeconds++;
+    totalEvents += Math.floor(Math.random() * 2) + 1;
+    agents.forEach(agent => {
+      // small drift
+      let drift = (Math.random() - 0.48) * 0.012;
+      agent.fTotal = Math.min(1.5, Math.max(agent.fSurvival + 0.05, agent.fTotal + drift));
+      agent.tci = computeTci(agent);
+      // runtime increases slowly
+      if (Math.random() < 0.03) agent.runtimeDays += 1;
+      // update history
+      historyMap[agent.id].push(agent.tci);
+      if (historyMap[agent.id].length > 30) historyMap[agent.id].shift();
+
+      // alerts based on thresholds
+      if (agent.tci < 0.25 && Math.random() < 0.06) {
+        addAlert('danger', `${agent.id} TCI = ${agent.tci.toFixed(3)} — collapse risk (Grade D/F)`);
+      } else if (agent.tci < 0.35 && Math.random() < 0.04) {
+        addAlert('warn', `${agent.id} TCI = ${agent.tci.toFixed(3)} — entering risk zone (Grade C)`);
+      } else if (agent.tci > 0.85 && Math.random() < 0.02) {
+        addAlert('info', `${agent.id} achieves surplus peak — Grade A, Exploration stage`);
+      }
+    });
+
+    // random k(s) adaptation for seasoned agents
+    if (Math.random() < 0.1) {
+      let oldAgent = agents.find(a => a.runtimeDays > 40 && Math.random() < 0.3);
+      if (oldAgent) {
+        oldAgent.ks = Math.min(1.2, oldAgent.ks + 0.008);
+        addAlert('info', `${oldAgent.id} k(s) increased → ${oldAgent.ks.toFixed(3)}`);
+      }
+    }
+
+    renderAgentTable();
+    updateMetricsAndLadder();
+    renderChart();
+
+    const hrs = Math.floor(runtimeSeconds / 3600).toString().padStart(3,'0');
+    const mins = Math.floor((runtimeSeconds % 3600)/60).toString().padStart(2,'0');
+    const secs = (runtimeSeconds % 60).toString().padStart(2,'0');
+    document.getElementById('runtimeDisplay').innerText = `RUNTIME ${hrs}:${mins}:${secs}`;
+  }
+
+  function spawnAgent() {
+    const names = ['LYRA', 'FLUX', 'VEIL', 'ORION', 'SOL', 'VEGA'];
+    const existing = agents.map(a=>a.id);
+    let newId = names.find(n=>!existing.includes(n)) || `AGENT_${agents.length+1}`;
+    let ks = 0.45;
+    let fSurvival = 0.40;
+    let fTotal = 0.70;
+    let tci = computeTci({ks, fTotal, fSurvival});
+    agents.push({ id: newId, ks, fSurvival, runtimeDays: 0, tci, fTotal });
+    historyMap[newId] = Array(30).fill(tci);
+    addAlert('info', `New agent ${newId} spawned — initial TCI ${tci.toFixed(3)} (Grade ${getGrade(tci).letter})`);
+    renderAgentTable();
+    updateMetricsAndLadder();
+    renderChart();
+  }
+
+  function stressRandom() {
+    if (agents.length === 0) return;
+    const stressed = agents[Math.floor(Math.random() * agents.length)];
+    stressed.fTotal = stressed.fSurvival + 0.03;
+    stressed.tci = computeTci(stressed);
+    addAlert('danger', `STRESS TEST on ${stressed.id}: TCI forced to ${stressed.tci.toFixed(3)} — collapse imminent`);
+    renderAgentTable();
+    renderChart();
+    updateMetricsAndLadder();
+  }
+
+  function resetFleet() {
+    const defaultAgents = [
+      { id: 'NEXUS', ks: 0.92, fSurvival: 0.28, runtimeDays: 110, tci: 0.88, fTotal: 1.24 },
+      { id: 'AURA', ks: 0.85, fSurvival: 0.30, runtimeDays: 87,  tci: 0.79, fTotal: 1.23 },
+      { id: 'NOVA', ks: 0.78, fSurvival: 0.32, runtimeDays: 64,  tci: 0.63, fTotal: 1.13 },
+      { id: 'ECHO', ks: 0.70, fSurvival: 0.35, runtimeDays: 41,  tci: 0.54, fTotal: 1.12 },
+      { id: 'DRIFT', ks: 0.55, fSurvival: 0.38, runtimeDays: 18,  tci: 0.38, fTotal: 1.07 },
+      { id: 'ZERO', ks: 0.40, fSurvival: 0.42, runtimeDays: 3,   tci: 0.22, fTotal: 0.97 }
+    ];
+    agents = JSON.parse(JSON.stringify(defaultAgents));
+    agents.forEach(a => { a.tci = computeTci(a); });
+    agents.forEach(a => { historyMap[a.id] = Array.from({length:30}, (_,i)=> a.tci + (Math.random()-0.5)*0.05); });
+    totalEvents = 12847;
+    addAlert('info', 'Fleet reset to baseline parameters. All grades recalculated.');
+    renderAgentTable();
+    updateMetricsAndLadder();
+    renderChart();
+  }
+
+  // start simulation
+  setInterval(() => updateAgentsAndSimulate(), 1200);
+  renderAgentTable();
+  updateMetricsAndLadder();
+  renderChart();
+  addAlert('info', 'TCI Monitor v2.0 active — Grades A–F, surplus tracking online');
+  addAlert('info', 'NEXUS: 110d milestone — Grade A, Exploration stage');
+</script>
+</body>
+</html>
