@@ -1,4 +1,4 @@
-[README-14.md](https://github.com/user-attachments/files/26938471/README-14.md)<!-- 
+(https://github.com/user-attachments/files/26938471/README-14.md)<!-- 
 ╔══════════════════════════════════════════════════════════════════════╗
 ║                                                                       ║
 ║   TCI(t) = k(s) · (F_total(t) − F_survival(s))                      ║
