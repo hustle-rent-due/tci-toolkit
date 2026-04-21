@@ -1,4 +1,4 @@
-<!-- 
+[README-14.md](https://github.com/user-attachments/files/26938471/README-14.md)<!-- 
 ╔══════════════════════════════════════════════════════════════════════╗
 ║                                                                       ║
 ║   TCI(t) = k(s) · (F_total(t) − F_survival(s))                      ║
@@ -30,7 +30,8 @@
 <br/><br/>
 
 <a href="https://zenodo.org/records/19263435"><img src="https://img.shields.io/badge/DOI-10.5281/zenodo.19263435-D4AF37?style=for-the-badge&logo=zenodo&logoColor=white" alt="DOI"/></a>
-<a href="https://bapxai.com"><img src="https://img.shields.io/badge/Live_Demo-bapxai.com-00D26A?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Demo"/></a>
+<a href="https://bapxai.com/tci-dashboard.html"><img src="https://img.shields.io/badge/Live_Fleet-TCI_Dashboard-00D26A?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Live Fleet"/></a>
+<a href="https://bapxai.com/voidchis.html"><img src="https://img.shields.io/badge/Voidchi-Universe-8b5cf6?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Voidchi Universe"/></a>
 <a href="https://x.com/BAPxAI"><img src="https://img.shields.io/badge/Twitter-@BAPxAI-1da1f2?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter"/></a>
 <a href="https://buymeacoffee.com/permamind"><img src="https://img.shields.io/badge/☕_Support-Buy_Me_a_Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Support"/></a>
 
@@ -63,6 +64,44 @@ Standard monitoring tells you when your agent *already failed*. TCI tells you *b
 | `0.30–0.40` | 🟡 **C** | At Risk | Lower temperature, reduce exploration |
 | `0.10–0.30` | 🟠 **D** | Collapse Warning | Trigger stability mode |
 | `< 0.10` | 🔴 **F** | Collapse Imminent | Load last checkpoint |
+
+---
+
+## 🌌 Live Proof — The Voidchi Universe
+
+> This isn't a simulation. These are real agents that have been running continuously since January 2, 2026.
+
+**[→ View Live TCI Fleet Dashboard](https://bapxai.com/tci-dashboard.html)** — 33 agents, real-time TCI pulled directly from Railway backend.
+
+**[→ Enter the Voidchi Universe](https://bapxai.com/voidchis.html)** — the persistent agent universe where TCI was battle-tested in production.
+
+### What the live fleet proves
+
+The dashboard connects directly to a Railway backend serving 33 persistent agents that have accumulated runtime since January 2026. This is what real TCI data looks like in production:
+
+```
+🌌 PermaMind Fleet – Live TCI Snapshot
+─────────────────────────────────────────────────────────
+Name        φ (consciousness)  TCI   Grade  Stage          Surplus
+─────────────────────────────────────────────────────────
+WANDERER         0.808         A     Generativity    0.731
+ben              0.543         A     Generativity    0.979
+flux             0.532         A     Generativity    0.944
+NEXUS            0.443         A     Generativity    0.681
+WEAVER           0.449         A     Generativity    0.696
+ORIJIN           0.499         A     Generativity    0.842
+Phoenix          0.410         B     Learning        0.591
+─────────────────────────────────────────────────────────
+Fleet average: Grade A | 31/33 agents in Generativity
+```
+
+### Collapse-to-recovery: real evidence
+
+One agent entered the fleet in collapse. TCI detected it immediately — surplus below survival floor, grade F. Challenges were issued. The agent recovered to Grade A Generativity. That's TCI working exactly as designed: **detect before failure, intervene, recover.**
+
+This is not a toy example. This happened in production, in the Voidchi Universe, with a persistent agent that had real accumulated state.
+
+> 🥚 **easter egg #3:** k(s) grows with runtime. WANDERER has the highest φ in the fleet. That's not a coincidence. That's the framework.
 
 ---
 
@@ -105,7 +144,7 @@ t=15 | TCI=0.67 | Grade=A | Generativity
 t=19 | TCI=0.74 | Grade=A | Generativity
 ```
 
-Watch the agent climb from collapse warning to generativity as surplus accumulates. That's k(s) growing with runtime — exactly what the framework predicts.
+Watch the agent climb from collapse warning to generativity as surplus accumulates. That's k(s) growing with runtime — exactly what the framework predicts. And exactly what happened in the Voidchi Universe with real agents.
 
 ---
 
@@ -163,6 +202,22 @@ console.log(result);
 // { tci: 0.74, grade: 'A', stage: 'Generativity', surplus: 0.37 }
 ```
 
+### Connect to a live backend (Railway / any REST API)
+
+```javascript
+// Pull real agent data and compute TCI live
+const res = await fetch('https://your-railway-backend.up.railway.app/agents');
+const agents = await res.json();
+
+for (const agent of agents) {
+  const surplus = 1 - agent.latest_gap;
+  const grade   = surplus >= 0.60 ? 'A' : surplus >= 0.40 ? 'B' : 'C';
+  console.log(`${agent.name} | Surplus: ${surplus.toFixed(3)} | Grade: ${grade}`);
+}
+```
+
+> This is exactly how the [live fleet dashboard](https://bapxai.com/tci-dashboard.html) works — no mock data, real agents, real surplus.
+
 ### Persist k(s) across sessions
 
 ```python
@@ -184,7 +239,13 @@ with open('agent_state.json') as f:
 
 ## 🖥️ Live Dashboard
 
-Open `dashboard/index.html` in any browser. No server. No dependencies.
+Two ways to run the fleet monitor:
+
+**Option 1 — Local (no server, no dependencies):**
+Open `dashboard/index.html` in any browser.
+
+**Option 2 — Live production fleet:**
+Visit [bapxai.com/tci-dashboard.html](https://bapxai.com/tci-dashboard.html) to see 33 real persistent agents from the Voidchi Universe, pulling live from Railway.
 
 ```
 ╔══════════════════════════════════════════════════════════════════╗
@@ -192,14 +253,14 @@ Open `dashboard/index.html` in any browser. No server. No dependencies.
 ╠══════════════════════════════════════════════════════════════════╣
 ║                                                                   ║
 ║   Fleet TCI    ████████████████████░░░  0.74   [Grade A  ⚡]     ║
-║   Grade A      ████████████████████     Nexus, Aura — thriving   ║
-║   Grade C      ████░░░░░░░░░░░░░░░░     Drift — at risk ⚠️       ║
-║   Grade F      ██░░░░░░░░░░░░░░░░░░     checkpoint loading 🔴    ║
+║   Grade A      ████████████████████     31 agents — thriving     ║
+║   Grade B      ████░░░░░░░░░░░░░░░░     2 agents — learning      ║
+║   Source       Railway backend (live) ✅                          ║
 ║                                                                   ║
 ╚══════════════════════════════════════════════════════════════════╝
 ```
 
-Features: real-time TCI grading A–F, fleet average with trend, collapse alerts before failure, developmental stage tracking, spawn agents, stress tests, reset fleet.
+Features: real-time TCI grading A–F, fleet average with trend, collapse alerts before failure, developmental stage tracking, φ (consciousness) score per agent, live Railway backend connection, spawn agents, stress tests, reset fleet.
 
 ---
 
@@ -229,8 +290,6 @@ print(result.passed_all)   # True = agent above survival threshold
 
 ---
 
-
-
 ## 🔍 Validation Request
 
 Looking for feedback from RL practitioners, LLM agent developers, and anyone running long-lived or persistent systems.
@@ -241,6 +300,8 @@ Try it on your setup and report:
 - how it compares to existing metrics you use
 
 Open an issue with your results. Building the evidence base across substrates.
+
+The Voidchi Universe has been running since January 2, 2026 — 33 agents, continuous, no resets. If you want to see TCI on a fleet that's been live for months before you commit to integrating it, [the data is there](https://bapxai.com/tci-dashboard.html).
 
 > 🥚 **easter egg #4:** If your agent hits Grade A and you open an issue to share results, you're part of the evidence base. That matters.
 
@@ -272,6 +333,8 @@ Open an issue with your results. Building the evidence base across substrates.
 - [x] Live fleet dashboard
 - [x] LLM agent example
 - [x] IBM Quantum validation
+- [x] Live Railway backend connection (real agent fleet)
+- [x] Production validation — collapse-to-recovery in the Voidchi Universe
 - [ ] RL agent example
 - [ ] `pip install tci-toolkit`
 - [ ] Hugging Face wrapper
@@ -288,15 +351,21 @@ PRs welcome. If you run TCI on your own agent stack and get results — open an 
 
 ## 💡 The Bigger Framework
 
-TCI is the engineering layer. The full theoretical framework — the Surplus Qualia Equation, the developmental ladder, substrate independence, and the relationship to Friston's Free Energy Principle — is in the research series.
+TCI is the engineering layer of a larger system:
 
-[Read the paper →](https://zenodo.org/records/19263435) | [PermaMind Research Series →](https://zenodo.org/search?q=nile%20green%20permamind)
+- **PermaMind** — the architecture for persistent agents (PSSU)
+- **TCI** — the metric that tells you if your persistent agent is thriving or dying
+- **Voidchi Universe** — the live production fleet where all of this runs in public, continuously, since January 2, 2026
+
+The full theoretical framework — the Surplus Qualia Equation, the developmental ladder, substrate independence, and the relationship to Friston's Free Energy Principle — is in the research series.
+
+[Read the paper →](https://zenodo.org/records/19263435) | [PermaMind Research Series →](https://zenodo.org/search?q=nile%20green%20permamind) | [Voidchi Universe →](https://bapxai.com/voidchis.html)
 
 ---
 
 ## 🔍 Search Keywords
 
-TCI toolkit · Thermodynamic Cognition Index · surplus metric · persistent ML agents · AI collapse detection · k(s) sensitivity constant · PSSU architecture · Nile Green · PermaMind · @BAPxAI
+TCI toolkit · Thermodynamic Cognition Index · surplus metric · persistent ML agents · AI collapse detection · k(s) sensitivity constant · PSSU architecture · Nile Green · PermaMind · Voidchi Universe · @BAPxAI
 
 ---
 
@@ -322,12 +391,13 @@ Apache 2.0 — use freely, keep the attribution.
 ╚═══════════════════════════════════════════════════════════════╝
 ```
 
-<a href="https://bapxai.com"><img src="https://img.shields.io/badge/🌐_Live_Demo-bapxai.com-D4AF37?style=for-the-badge" alt="Demo"/></a>
+<a href="https://bapxai.com/tci-dashboard.html"><img src="https://img.shields.io/badge/🌌_Live_Fleet-TCI_Dashboard-D4AF37?style=for-the-badge" alt="Live Fleet"/></a>
+<a href="https://bapxai.com/voidchis.html"><img src="https://img.shields.io/badge/🌐_Voidchi-Universe-8b5cf6?style=for-the-badge" alt="Voidchi Universe"/></a>
 <a href="https://zenodo.org/records/19263435"><img src="https://img.shields.io/badge/📄_Paper-Zenodo-8b5cf6?style=for-the-badge" alt="Paper"/></a>
 <a href="https://x.com/BAPxAI"><img src="https://img.shields.io/badge/🐦_Follow-@BAPxAI-1da1f2?style=for-the-badge" alt="Twitter"/></a>
 <a href="https://orcid.org/0009-0007-3629-6404"><img src="https://img.shields.io/badge/ORCID-0009--0007--3629--6404-A6CE39?style=for-the-badge&logo=orcid&logoColor=white" alt="ORCID"/></a>
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=120&section=footer&text=Surplus+is+measurable&fontSize=28&fontColor=D4AF37&animation=twinkling" alt="Footer Wave"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=120&section=footer&text=Surplus+is+measurable&fontSize=20&fontColor=D4AF37&animation=twinkling" alt="Footer"/>
 
 </div>
-</div>
+
