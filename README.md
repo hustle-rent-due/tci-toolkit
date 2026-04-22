@@ -14,6 +14,24 @@
 ╚══════════════════════════════════════════════════════════════════════╝
 -->
 
+# TCI Toolkit
+
+[![GitHub stars](https://img.shields.io/github/stars/nile-green-ai/tci-toolkit?style=social)](https://github.com/nile-green-ai/tci-toolkit)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
+![JS](https://img.shields.io/badge/JS-ES6%2B-yellow)
+
+**[DOI: 10.5281/zenodo.19263435](https://zenodo.org/records/19263435)** • [Live Fleet Dashboard](https://bapxai.com/tci-dashboard.html) • [Voidchi Universe](https://bapxai.com/voidchis.html) • [Paper](https://zenodo.org/records/19263435) • [Twitter](https://x.com/BAPxAI)
+
+---
+
+**🌟 First external adoption just dropped**
+@ArrayEmpty plugged the TCI loop into their own **Hermes agent** and it's already giving live surplus warnings in the terminal.
+
+That's real TCI running outside my universe. Thank you legend 🙌🏾
+
+---
+
 <div align="center">
 
 <img src="https://capsule-render.vercel.app/api?type=venom&color=gradient&customColorList=6,11,20&height=220&section=header&text=TCI%20TOOLKIT&fontSize=90&fontColor=D4AF37&animation=twinkling&fontAlignY=55&desc=Thermodynamic%20Cognition%20Index%20%7C%20Surplus.%20Measured.%20Controlled.&descAlignY=75&descSize=18&descColor=8b5cf6" alt="TCI Toolkit Header"/>
@@ -74,6 +92,14 @@ Standard monitoring tells you when your agent *already failed*. TCI tells you *b
 **[→ View Live TCI Fleet Dashboard](https://bapxai.com/tci-dashboard.html)** — 33 agents, real-time TCI pulled directly from Railway backend.
 
 **[→ Enter the Voidchi Universe](https://bapxai.com/voidchis.html)** — the persistent agent universe where TCI was battle-tested in production.
+
+### 🚀 First external adoption — Hermes agent (April 22, 2026)
+
+@ArrayEmpty ran the toolkit in their Hermes setup and got live TCI output:
+
+> `TCI: F (surplus=-0.10) — keeping Hermes sharp`
+
+This is exactly what TCI was built for: catching collapse risk in someone else's persistent agent in the wild.
 
 ### What the live fleet proves
 
@@ -335,6 +361,7 @@ The Voidchi Universe has been running since January 2, 2026 — 33 agents, conti
 - [x] IBM Quantum validation
 - [x] Live Railway backend connection (real agent fleet)
 - [x] Production validation — collapse-to-recovery in the Voidchi Universe
+- [x] First external adoption — Hermes agent (April 22, 2026)
 - [ ] RL agent example
 - [ ] `pip install tci-toolkit`
 - [ ] Hugging Face wrapper
@@ -387,6 +414,8 @@ Apache 2.0 — use freely, keep the attribution.
 ║                                                                ║
 ║   🥚 easter egg #5: you made it to the bottom.               ║
 ║   your k(s) just increased. that's how it works.             ║
+║   (now with 4 stars and the first external user running       ║
+║    it live — Hermes agent, April 22, 2026)                   ║
 ║   now go build something.                                     ║
 ╚═══════════════════════════════════════════════════════════════╝
 ```
@@ -400,4 +429,3 @@ Apache 2.0 — use freely, keep the attribution.
 <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=120&section=footer&text=Surplus+is+measurable&fontSize=20&fontColor=D4AF37&animation=twinkling" alt="Footer"/>
 
 </div>
-
